@@ -4,6 +4,9 @@ import { Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import FloatingWhatsApp from "./components/FloatingWhatsApp";
+import CookieConsent from "./components/CookieConsent";
+import GoogleAnalytics from "./components/GoogleAnalytics";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -112,6 +115,9 @@ export default function RootLayout({
         </main>
 
         <Footer />
+        <FloatingWhatsApp />
+        <CookieConsent />
+        <GoogleAnalytics />
       </body>
     </html>
   );

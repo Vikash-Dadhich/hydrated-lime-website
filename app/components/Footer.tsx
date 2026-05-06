@@ -1,98 +1,71 @@
 import Link from "next/link";
-
-const c = {
-  bg: "#0f172a",
-  text: "#94a3b8",
-  textBright: "#e2e8f0",
-  border: "#1e293b",
-  white: "#f8fafc",
-};
-
-const navLinks = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Products", href: "/products" },
-  { label: "Contact", href: "/contact" },
-];
+import { footerNavLinks, primaryContact, addresses, company } from "../data/site";
+import products from "../data/products";
 
 export default function Footer() {
   return (
-    <footer
-      style={{
-        background: c.bg,
-        color: c.text,
-        padding: "3.5rem 1.5rem 2rem",
-        position: "relative",
-      }}
-    >
-      {/* Grain */}
+    <footer className="bg-slate-900 text-slate-400 px-6 pt-14 pb-8 relative">
+      {/* Grain overlay */}
       <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage: "url(/grain.svg)",
-          backgroundRepeat: "repeat",
-          backgroundSize: "200px",
-          opacity: 0.03,
-          pointerEvents: "none",
-        }}
+        className="absolute inset-0 pointer-events-none opacity-[0.03]"
+        style={{ backgroundImage: "url(/grain.svg)", backgroundRepeat: "repeat", backgroundSize: "200px" }}
       />
-      <div style={{ maxWidth: "72rem", margin: "0 auto" }}>
+
+      <div className="max-w-[72rem] mx-auto relative">
         {/* Top row */}
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-            gap: "2.5rem",
-          }}
-        >
+        <div className="flex flex-wrap justify-between gap-10">
           {/* Brand */}
-          <div style={{ maxWidth: "22rem" }}>
-            <div
-              style={{
-                fontFamily: "var(--font-playfair, Georgia, serif)",
-                fontWeight: 700,
-                fontSize: "1.25rem",
-                color: c.white,
-                marginBottom: "0.75rem",
-              }}
-            >
+          <div className="max-w-[22rem]">
+            <p className="font-serif font-bold text-xl text-slate-50 mb-3">
               Vikas Lime Industries
-            </div>
-            <p style={{ fontSize: "0.875rem", lineHeight: 1.7, margin: 0 }}>
-              Premium hydrated lime, quick lime & limestone gitti for
+            </p>
+            <p className="text-sm leading-relaxed m-0">
+              Premium hydrated lime, quick lime &amp; limestone for
               India&apos;s industries — consistent quality since 2007.
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <div
-              style={{
-                fontSize: "0.75rem",
-                fontWeight: 600,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase" as const,
-                color: c.textBright,
-                marginBottom: "1rem",
-              }}
-            >
-              Quick Links
-            </div>
-            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              {navLinks.map((l) => (
+            <p className="text-[0.75rem] font-semibold tracking-[0.08em] uppercase text-slate-200 mb-4">
+              Pages
+            </p>
+            <ul className="list-none m-0 p-0 flex flex-col gap-2">
+              {footerNavLinks.map((l) => (
                 <li key={l.label}>
                   <Link
                     href={l.href}
-                    style={{
-                      fontSize: "0.875rem",
-                      color: c.text,
-                      textDecoration: "none",
-                    }}
-                    className="ftr-link"
+                    className="text-sm text-slate-400 hover:text-slate-50 transition-colors duration-150"
                   >
                     {l.label}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <Link
+                  href="/about/company-profile"
+                  className="text-sm text-slate-400 hover:text-slate-50 transition-colors duration-150"
+                >
+                  Company Profile
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Products sub-links */}
+          <div>
+            <p className="text-[0.75rem] font-semibold tracking-[0.08em] uppercase text-slate-200 mb-4">
+              Products
+            </p>
+            <ul className="list-none m-0 p-0 flex flex-col gap-2">
+              {products.map((p) => (
+                <li key={p.id}>
+                  <Link
+                    href={`/products#${p.id}`}
+                    className="text-sm text-slate-400 hover:text-slate-50 transition-colors duration-150"
+                  >
+                    {p.name}
+                    <span className="ml-1.5 text-[0.65rem] text-slate-600 font-mono">{p.formula}</span>
                   </Link>
                 </li>
               ))}
@@ -101,60 +74,59 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <div
-              style={{
-                fontSize: "0.75rem",
-                fontWeight: 600,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase" as const,
-                color: c.textBright,
-                marginBottom: "1rem",
-              }}
-            >
+            <p className="text-[0.75rem] font-semibold tracking-[0.08em] uppercase text-slate-200 mb-4">
               Reach Us
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", fontSize: "0.875rem" }}>
-              <span>A-280, Saraswati Nagar Basni</span>
-              <span>342005, Jodhpur, Rajasthan</span>
-              <a href="tel:+919414135630" style={{ color: c.text, textDecoration: "none" }} className="ftr-link">
-                +91 94141 35630
+            </p>
+            <div className="flex flex-col gap-1.5 text-sm">
+              <span>{addresses[0].lines[1]}</span>
+              <span>{addresses[0].lines[2]}</span>
+              <a
+                href={`tel:${primaryContact.mobileTel}`}
+                className="text-slate-400 hover:text-slate-50 transition-colors duration-150"
+              >
+                {primaryContact.mobile}
               </a>
-              <a href="mailto:vikashlime@gmail.com" style={{ color: c.text, textDecoration: "none" }} className="ftr-link">
-                vikashlime@gmail.com
+              <a
+                href={`mailto:${primaryContact.email}`}
+                className="text-slate-400 hover:text-slate-50 transition-colors duration-150"
+              >
+                {primaryContact.email}
               </a>
             </div>
           </div>
         </div>
 
         {/* Divider */}
-        <div
-          style={{
-            height: 1,
-            background: c.border,
-            margin: "2.5rem 0 1.5rem",
-          }}
-        />
+        <div className="h-px bg-slate-800 my-10" />
+
+        {/* Service states */}
+        <div className="mb-6">
+          <p className="text-[0.6875rem] font-semibold tracking-[0.1em] uppercase text-slate-600 mb-3">
+            Supplying Across India
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {company.serviceStates.map((state) => (
+              <span
+                key={state}
+                className="text-[0.6875rem] text-slate-500 bg-slate-800 px-2.5 py-1 rounded-full"
+              >
+                {state}
+              </span>
+            ))}
+            <span className="text-[0.6875rem] text-slate-600 bg-transparent px-2.5 py-1 rounded-full">
+              + more
+            </span>
+          </div>
+        </div>
+
+        <div className="h-px bg-slate-800 mb-6" />
 
         {/* Bottom */}
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: "0.5rem",
-            fontSize: "0.75rem",
-            color: c.text,
-          }}
-        >
+        <div className="flex flex-wrap justify-between items-center gap-3 text-xs text-slate-500">
           <span>© {new Date().getFullYear()} Vikas Lime Industries. All rights reserved.</span>
-          <span>Jodhpur, Rajasthan — India</span>
+          <span className="text-slate-600">{company.legalNote}</span>
         </div>
       </div>
-
-      <style>{`
-        .ftr-link:hover { color: ${c.white} !important; }
-      `}</style>
     </footer>
   );
 }

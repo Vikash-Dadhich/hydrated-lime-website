@@ -1,33 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-const milestones = [
-  {
-    year: "2007",
-    title: "Founded",
-    description:
-      "Established as a small manufacturing unit with a focus on quality and consistency.",
-  },
-  {
-    year: "2012",
-    title: "Growth Phase",
-    description:
-      "Expanded operations and built long-term relationships with large industrial clients.",
-  },
-  {
-    year: "2020",
-    title: "Present Day",
-    description:
-      "Operating with an annual production capacity of 20,000 tons, supplying industries across India.",
-  },
-  {
-    year: "2026",
-    title: "Looking Ahead",
-    description:
-      "Focused on capacity expansion, pan-India leadership, export markets, and process modernization.",
-  },
-];
+import { milestones } from "../../data/site";
 
 export default function Timeline() {
   const ref = useRef<HTMLElement>(null);
@@ -36,149 +10,141 @@ export default function Timeline() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-
     const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setVisible(false);
-            requestAnimationFrame(() =>
-              requestAnimationFrame(() => setVisible(true))
-            );
-          } else {
-            setVisible(false);
-          }
-        });
+      ([entry]) => {
+        if (entry.isIntersecting)
+          requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
       },
       { threshold: 0.1 }
     );
-
     obs.observe(el);
-
-    const restart = () => {
-      setVisible(false);
-      requestAnimationFrame(() =>
-        requestAnimationFrame(() => setVisible(true))
-      );
-    };
-
-    const onShow = (e: Event) => {
-      try {
-        const detail = (e as CustomEvent).detail;
-        if (detail?.id === "about") restart();
-      } catch {}
-    };
-    const onHash = () => {
-      if (location.hash === "#about") restart();
-    };
-    const onPop = () => {
-      if (
-        location.hash === "#about" ||
-        location.pathname.endsWith("/about")
-      )
-        restart();
-    };
-
-    window.addEventListener("section:show", onShow as EventListener);
-    window.addEventListener("hashchange", onHash as EventListener);
-    window.addEventListener("popstate", onPop as EventListener);
-
-    return () => {
-      obs.disconnect();
-      window.removeEventListener("section:show", onShow as EventListener);
-      window.removeEventListener("hashchange", onHash as EventListener);
-      window.removeEventListener("popstate", onPop as EventListener);
-    };
+    return () => obs.disconnect();
   }, []);
 
   return (
-    <section ref={ref} style={{ background: "#ffffff", width: "100%" }}>
-      <div style={{ width: "100%", padding: "5rem 1.5rem" }}>
-        <div style={{ maxWidth: "72rem", margin: "0 auto" }}>
-          <div
-            style={{
-              background: "#f8fafc",
-              borderRadius: "1.25rem",
-              border: "1px solid #e2e8f0",
-              boxShadow: "0 4px 12px rgba(15, 23, 42, 0.04)",
-              overflow: "hidden",
-            }}
-            className="tl-container"
+    <section ref={ref} className="bg-white py-28 px-6">
+      <div className="max-w-[72rem] mx-auto">
+        {/* Header */}
+        <div className="mb-16">
+          <p
+            className="text-[0.75rem] font-semibold tracking-[0.12em] uppercase text-slate-400 mb-3"
+            style={{ opacity: visible ? 1 : 0, transition: "opacity 600ms ease" }}
           >
-            {/* Header */}
-            <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
+            Our Journey
+          </p>
+          <div className="flex items-end justify-between gap-6 flex-wrap">
+            <h2
+              className="font-bold text-slate-900 leading-tight"
+              style={{
+                fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
+                letterSpacing: "-0.025em",
+                opacity: visible ? 1 : 0,
+                transform: visible ? "translateY(0)" : "translateY(1rem)",
+                transition: "opacity 700ms ease 100ms, transform 700ms ease 100ms",
+              }}
+            >
+              From Modest Beginnings
+              <br />to Pan-India Scale
+            </h2>
+            <a
+              href="/about/company-profile#journey"
+              className="cp-link shrink-0"
+              style={{
+                opacity: visible ? 1 : 0,
+                transition: "opacity 600ms ease 300ms",
+              }}
+            >
+              Read the full story →
+            </a>
+          </div>
+        </div>
+
+        {/* Desktop: horizontal timeline */}
+        <div className="hidden md:block relative">
+          {/* Connecting line */}
+          <div
+            className="absolute top-[2.75rem] left-0 right-0 h-px bg-slate-200"
+            style={{
+              transformOrigin: "left",
+              transform: visible ? "scaleX(1)" : "scaleX(0)",
+              transition: "transform 1000ms cubic-bezier(0.16,1,0.3,1) 200ms",
+            }}
+          />
+
+          <div className="grid grid-cols-4 gap-6">
+            {milestones.map((m, i) => (
               <div
+                key={i}
+                className="flex flex-col"
                 style={{
-                  fontSize: "0.875rem",
-                  color: "#475569",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase" as const,
-                  fontWeight: 600,
-                  marginBottom: "1rem",
+                  opacity: visible ? 1 : 0,
+                  transform: visible ? "translateY(0)" : "translateY(1.5rem)",
+                  transition: `opacity 600ms ease ${300 + i * 120}ms, transform 600ms ease ${300 + i * 120}ms`,
                 }}
               >
-                LEGACY TO GROWTH
-              </div>
-              <p
-                style={{
-                  fontSize: "1rem",
-                  color: "#64748b",
-                  maxWidth: "42ch",
-                  margin: "0.75rem auto 0",
-                  lineHeight: 1.6,
-                }}
-              >
-                A journey shaped by trust, scale, and continuous improvement.
-              </p>
-              <a href="/about/company-profile#journey" className="cp-link" style={{ marginTop: "1rem", display: "inline-block" }}>Read the full story →</a>
-            </div>
-
-            {/* Timeline */}
-            <div className="tl-track">
-              {milestones.map((m, i) => {
-                const side = i % 2 === 0 ? "left" : "right";
-                return (
+                {/* Dot */}
+                <div className="relative mb-8">
                   <div
-                    key={i}
-                    className={`tl-row ${visible ? "tl-show" : ""}`}
-                    style={{ transitionDelay: visible ? `${i * 150}ms` : "0ms" }}
-                  >
-                    {/* Left card (desktop even indices only) */}
-                    <div className="tl-cell tl-cell-left">
-                      {side === "left" && (
-                        <div className="tl-card">
-                          <span className="tl-year">{m.year}</span>
-                          <h4 className="tl-title">{m.title}</h4>
-                          <p className="tl-desc">{m.description}</p>
-                        </div>
-                      )}
-                    </div>
+                    className="w-5 h-5 rounded-full bg-white border-[3px] border-slate-900 transition-all duration-500 relative z-10"
+                    style={{
+                      transform: visible ? "scale(1)" : "scale(0)",
+                      transition: `transform 400ms cubic-bezier(0.34,1.56,0.64,1) ${400 + i * 120}ms`,
+                    }}
+                  />
+                </div>
 
-                    {/* Center dot */}
-                    <div className="tl-center">
-                      <div className="tl-dot" />
-                    </div>
+                {/* Year */}
+                <span className="text-[0.75rem] font-bold tracking-[0.08em] text-slate-400 uppercase mb-2">
+                  {m.year}
+                </span>
 
-                    {/* Right card (desktop odd indices + ALL on mobile) */}
-                    <div className="tl-cell tl-cell-right">
-                      {side === "right" ? (
-                        <div className="tl-card">
-                          <span className="tl-year">{m.year}</span>
-                          <h4 className="tl-title">{m.title}</h4>
-                          <p className="tl-desc">{m.description}</p>
-                        </div>
-                      ) : (
-                        <div className="tl-card tl-card-mobile-only">
-                          <span className="tl-year">{m.year}</span>
-                          <h4 className="tl-title">{m.title}</h4>
-                          <p className="tl-desc">{m.description}</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                {/* Title */}
+                <h3 className="text-[1rem] font-semibold text-slate-900 mb-3 leading-snug">
+                  {m.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-[0.875rem] text-slate-500 leading-relaxed">
+                  {m.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile: vertical list */}
+        <div className="md:hidden flex flex-col gap-0">
+          {/* Vertical line */}
+          <div className="relative">
+            <div className="absolute left-[0.9rem] top-0 bottom-0 w-px bg-slate-200" />
+            {milestones.map((m, i) => (
+              <div
+                key={i}
+                className="relative pl-10 pb-10 last:pb-0"
+                style={{
+                  opacity: visible ? 1 : 0,
+                  transform: visible ? "translateX(0)" : "translateX(-1rem)",
+                  transition: `opacity 600ms ease ${i * 120}ms, transform 600ms ease ${i * 120}ms`,
+                }}
+              >
+                {/* Dot */}
+                <div
+                  className="absolute left-0 top-1 w-[1.875rem] h-[1.875rem] rounded-full bg-white border-[3px] border-slate-900 flex items-center justify-center"
+                  style={{
+                    transform: visible ? "scale(1)" : "scale(0)",
+                    transition: `transform 400ms cubic-bezier(0.34,1.56,0.64,1) ${150 + i * 120}ms`,
+                  }}
+                >
+                  <div className="w-2 h-2 rounded-full bg-slate-900" />
+                </div>
+
+                <span className="text-[0.6875rem] font-bold tracking-[0.1em] text-slate-400 uppercase block mb-1">
+                  {m.year}
+                </span>
+                <h3 className="text-[1rem] font-semibold text-slate-900 mb-2">{m.title}</h3>
+                <p className="text-[0.875rem] text-slate-500 leading-relaxed">{m.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
