@@ -1,34 +1,21 @@
 import Link from "next/link";
 
-export default function NotFound() {
-  const c = {
-    bg: "#0f172a",
-    white: "#ffffff",
-    faint: "#94a3b8",
-    border: "rgba(255,255,255,0.08)",
-  };
+const quickLinks = [
+  { label: "Products",   href: "/products",   desc: "Hydrated Lime, Quick Lime & Limestone" },
+  { label: "Industries", href: "/industries", desc: "Steel, Water Treatment, Construction…"  },
+  { label: "About",      href: "/about",      desc: "Our story, team, and capabilities"      },
+  { label: "Contact",    href: "/contact",    desc: "Enquiry, pricing, and samples"           },
+];
 
+export default function NotFound() {
   return (
-    <div
-      style={{
-        background: c.bg,
-        color: c.white,
-        minHeight: "80vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: "center",
-        padding: "4rem 1.5rem",
-      }}
-    >
-      <div style={{ maxWidth: "28rem" }}>
+    <div className="bg-slate-900 text-white min-h-[80vh] flex items-center justify-center px-6 py-16">
+      <div className="max-w-[36rem] w-full text-center">
         <p
+          className="font-bold leading-none mb-4"
           style={{
             fontSize: "5rem",
-            fontWeight: 700,
             letterSpacing: "-0.04em",
-            lineHeight: 1,
-            margin: "0 0 1rem",
             background: "linear-gradient(135deg, #e2e8f0, #64748b)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
@@ -37,39 +24,32 @@ export default function NotFound() {
         >
           404
         </p>
-        <h1
-          style={{
-            fontSize: "1.5rem",
-            fontWeight: 600,
-            margin: "0 0 0.75rem",
-          }}
-        >
-          Page not found
-        </h1>
-        <p
-          style={{
-            fontSize: "1rem",
-            color: c.faint,
-            lineHeight: 1.6,
-            margin: "0 0 2rem",
-          }}
-        >
+        <h1 className="text-2xl font-semibold mb-3">Page not found</h1>
+        <p className="text-slate-400 leading-relaxed mb-10">
           The page you&apos;re looking for doesn&apos;t exist or has been moved.
+          Here are some useful places to go:
         </p>
+
+        <div className="grid grid-cols-2 gap-3 mb-10">
+          {quickLinks.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className="group bg-slate-800 hover:bg-slate-700 border border-white/[0.06] hover:border-white/[0.12] rounded-xl p-4 text-left no-underline transition-all duration-200"
+            >
+              <p className="font-semibold text-white text-[0.9375rem] mb-0.5 group-hover:text-white">{l.label}</p>
+              <p className="text-[0.75rem] text-slate-500 leading-snug">{l.desc}</p>
+            </Link>
+          ))}
+        </div>
+
         <Link
           href="/"
-          style={{
-            display: "inline-block",
-            background: c.white,
-            color: c.bg,
-            fontWeight: 600,
-            fontSize: "0.9375rem",
-            padding: "0.75rem 2rem",
-            borderRadius: "0.625rem",
-            textDecoration: "none",
-            transition: "transform 200ms ease, box-shadow 200ms ease",
-          }}
+          className="inline-flex items-center gap-2 text-[0.875rem] text-slate-400 hover:text-white transition-colors duration-150 no-underline"
         >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
           Back to Home
         </Link>
       </div>

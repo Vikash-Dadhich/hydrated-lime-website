@@ -57,8 +57,25 @@ export default function CompanyProfileClient({
     if (el) el.scrollIntoView({ behavior: "smooth" });
   }
 
+  const ChevronRight = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 18l6-6-6-6"/>
+    </svg>
+  );
+
   return (
     <div className="cp-page">
+      {/* Breadcrumb */}
+      <div className="bg-white border-b border-slate-100 px-6 py-3">
+        <div className="max-w-[72rem] mx-auto flex items-center gap-2 text-[0.75rem] text-slate-400">
+          <Link href="/" className="hover:text-slate-700 transition-colors duration-150">Home</Link>
+          <ChevronRight />
+          <Link href="/about" className="hover:text-slate-700 transition-colors duration-150">About</Link>
+          <ChevronRight />
+          <span className="text-slate-700 font-medium">Company Profile</span>
+        </div>
+      </div>
+
       {/* Hero header */}
       <div className="cp-hero">
         <div className="cp-hero-inner">
@@ -102,11 +119,24 @@ export default function CompanyProfileClient({
             </div>
             <div className="cp-stat-divider" />
             <div className="cp-stat">
-              <span className="cp-stat-value">3</span>
-              <span className="cp-stat-label">Core Products</span>
+              <span className="cp-stat-value">4</span>
+              <span className="cp-stat-label">Product Lines</span>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Mobile pill nav — sticky, scrollable, hidden on lg+ */}
+      <div className="cp-mobile-nav">
+        {sections.map((s) => (
+          <button
+            key={s.id}
+            onClick={() => scrollTo(s.id)}
+            className={`cp-mobile-pill ${activeId === s.id ? "cp-mobile-pill-active" : ""}`}
+          >
+            {s.label}
+          </button>
+        ))}
       </div>
 
       {/* Main body: sidebar + content */}

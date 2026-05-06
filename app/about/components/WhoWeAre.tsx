@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { company, addresses } from "../../data/site";
 
 export default function WhoWeAre() {
   const ref = useRef<HTMLElement | null>(null);
@@ -9,85 +10,111 @@ export default function WhoWeAre() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-
     const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setVisible(false);
-            requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
-          } else {
-            setVisible(false);
-          }
-        });
+      ([entry]) => {
+        if (entry.isIntersecting)
+          requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
       },
-      { threshold: 0.2 }
+      { threshold: 0.1 }
     );
-
     obs.observe(el);
-
-    const restart = () => {
-      setVisible(false);
-      requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
-    };
-
-    const onShow = (e: Event) => {
-      try {
-        const detail = (e as CustomEvent).detail;
-        if (detail?.id === "about") restart();
-      } catch {}
-    };
-
-    const onHash = () => {
-      if (location.hash === "#about") restart();
-    };
-
-    const onPop = () => {
-      if (location.hash === "#about" || location.pathname.endsWith("/about")) restart();
-    };
-
-    window.addEventListener("section:show", onShow as EventListener);
-    window.addEventListener("hashchange", onHash as EventListener);
-    window.addEventListener("popstate", onPop as EventListener);
-
-    return () => {
-      obs.disconnect();
-      window.removeEventListener("section:show", onShow as EventListener);
-      window.removeEventListener("hashchange", onHash as EventListener);
-      window.removeEventListener("popstate", onPop as EventListener);
-    };
+    return () => obs.disconnect();
   }, []);
 
-  return (
-    <section ref={ref} style={{ width: "100%", background: "#ffffff" }}>
-      <div className="container" style={{ paddingTop: "5rem", paddingBottom: "5rem" }}>
-        <div className="about-card">
-          <div className="content-center">
-            <div style={{ display: "flex", flexDirection: "column", gap: "2rem", alignItems: "center" }}>
-              <div
-                style={{
-                  flex: 1,
-                  opacity: visible ? 1 : 0,
-                  transform: visible ? "translateX(0)" : "translateX(-1.5rem)",
-                  transition: "all 900ms ease-out",
-                }}
-              >
-                <div style={{ color: "#64748b", fontSize: "0.75rem", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                  Who We Are
-                </div>
-                <h3 style={{ marginTop: "0.75rem", fontSize: "clamp(1.5rem, 3vw, 1.875rem)", color: "#0f172a", fontWeight: 600, maxWidth: "36rem" }}>
-                  Founded in 2007, we supply consistent, quality lime to India&#8217;s industries.
-                </h3>
+  const slideIn = (from: "left" | "right", delay = 0): React.CSSProperties => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? "translateX(0)" : `translateX(${from === "left" ? "-2rem" : "2rem"})`,
+    transition: `opacity 900ms cubic-bezier(0.16,1,0.3,1) ${delay}ms, transform 900ms cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
+  });
 
-                <div style={{ marginTop: "1.5rem", display: "flex", flexDirection: "column", gap: "0.75rem", color: "#475569", maxWidth: "32rem" }}>
-                  <p>We began as a small manufacturing unit and have grown into a trusted supplier for large industrial clients.</p>
-                  <p>Specialising in Hydrated Lime, Quick Lime, and Limestone Gitti, we maintain a manufacturing unit in Hariyadhana, Jodhpur, and an office in Saraswati Nagar.</p>
-                  <p>Our operations support Pan&#8209;India supply with a focus on reliability and specification consistency.</p>
-                </div>
-                <a href="/about/company-profile#overview" className="cp-link">Read full company overview &#8594;</a>
+  const facts = [
+    { label: "Founded",         value: "2007", sub: "Jodhpur, Rajasthan" },
+    { label: "Annual Capacity", value: "20,000+", sub: "Metric Tonnes" },
+    { label: "Purity Grades",   value: "80 · 85 · 90", sub: "Percent CaO / Ca(OH)₂" },
+    { label: "Distribution",    value: "Pan-India", sub: "All major industrial zones" },
+  ];
+
+  return (
+    <section ref={ref} className="bg-white py-28 px-6">
+      <div className="max-w-[72rem] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
+
+          {/* Left — Narrative */}
+          <div style={slideIn("left", 0)}>
+            <p className="text-[0.75rem] font-semibold tracking-[0.12em] uppercase text-slate-400 mb-4">
+              Our Story
+            </p>
+            <h2
+              className="font-bold text-slate-900 leading-tight mb-8"
+              style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", letterSpacing: "-0.025em" }}
+            >
+              A Manufacturer with a Long-Term View
+            </h2>
+
+            <div className="flex flex-col gap-5 text-slate-500 leading-relaxed" style={{ fontSize: "1rem" }}>
+              <p>
+                Vikas Lime Industries was established in 2007 with a straightforward
+                purpose — to produce consistent, high-quality lime and serve the industrial
+                demand of Rajasthan and beyond. What began as a modest manufacturing unit
+                has grown into a recognised pan-India supplier trusted by steel mills,
+                chemical producers, and water treatment operators alike.
+              </p>
+              <p>
+                We operate from two locations: our manufacturing facility in Hariyadhana,
+                Bilara — close to the limestone quarries we source from — and our
+                coordination office in Saraswati Nagar, Jodhpur. This proximity to raw
+                material allows us to maintain quality at the source, not just at the
+                end of the line.
+              </p>
+              <p>
+                Our growth has been deliberate and relationship-driven. We don&apos;t
+                compete on price alone. We compete on batch consistency, reliable
+                logistics, and a team that understands the technical demands of the
+                industries we supply.
+              </p>
+            </div>
+
+            <a
+              href="/about/company-profile#overview"
+              className="cp-link mt-8"
+            >
+              Read the full company overview →
+            </a>
+          </div>
+
+          {/* Right — Facts card */}
+          <div style={slideIn("right", 150)}>
+            <div className="bg-slate-900 rounded-3xl p-8 md:p-10">
+              <p className="text-[0.6875rem] font-semibold tracking-[0.15em] uppercase text-slate-500 mb-8">
+                Company at a Glance
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 divide-y divide-slate-800">
+                {facts.map((f, i) => (
+                  <div key={i} className="py-6 first:pt-0 last:pb-0 sm:odd:pr-8 sm:even:pl-8 sm:border-r-0">
+                    <div
+                      className="font-bold text-white mb-1"
+                      style={{ fontSize: "clamp(1.25rem, 2vw, 1.625rem)", letterSpacing: "-0.02em" }}
+                    >
+                      {f.value}
+                    </div>
+                    <div className="text-[0.8125rem] font-medium text-slate-400">{f.label}</div>
+                    <div className="text-[0.75rem] text-slate-600 mt-0.5">{f.sub}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Address block */}
+              <div className="mt-8 pt-8 border-t border-slate-800">
+                <p className="text-[0.6875rem] font-semibold tracking-[0.12em] uppercase text-slate-600 mb-3">
+                  Manufacturing Unit
+                </p>
+                <p className="text-[0.875rem] text-slate-400 leading-relaxed">
+                  {addresses[1].lines.slice(1).join(", ")}
+                </p>
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </section>

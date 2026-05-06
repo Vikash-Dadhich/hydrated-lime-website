@@ -47,7 +47,7 @@ const sections = [
     label: "Products & Specifications",
     number: "04",
     content: [
-      "The company's product portfolio includes Hydrated Lime, Quick Lime, and Limestone Gitti — three core products that serve a broad spectrum of industrial applications. Hydrated Lime and Quick Lime are available in 80%, 85%, and 90% purity grades, and the company is equipped to customise specifications based on the technical requirements of individual clients. Limestone Gitti is supplied in standard industrial grades suitable for construction and process-related use.",
+      "The company's product portfolio includes Hydrated Lime, Quick Lime Lumps, Quick Lime Powder, and Limestone — four product lines that serve a broad spectrum of industrial applications. Hydrated Lime and Quick Lime are available in 80%, 85%, and 90% purity grades, and the company is equipped to customise specifications based on the technical requirements of individual clients. Limestone is supplied in multiple aggregate sizes suitable for construction, road base, and process-related use.",
       "Each product is manufactured under controlled conditions to ensure batch-to-batch consistency. Whether the application is water treatment, flue gas desulphurisation, soil stabilisation, or chemical processing, Vikas Lime Industries works with clients to identify the appropriate grade, particle size, and packaging format to match the specific needs of their operation.",
     ],
   },

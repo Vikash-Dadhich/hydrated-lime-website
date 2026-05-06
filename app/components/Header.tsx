@@ -3,27 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useCallback, useRef } from "react";
-
-/* ── Shared palette ── */
-const c = {
-  barBg: "rgba(15, 23, 42, 0.75)",
-  barBgSolid: "rgba(15, 23, 42, 0.92)",
-  link: "#94a3b8",
-  linkHover: "#ffffff",
-  white: "#ffffff",
-  pillBg: "#ffffff",
-  pillText: "#0f172a",
-  arrowBg: "#0f172a",
-  arrowFg: "#ffffff",
-  drawerBg: "#0f172a",
-};
-
-const navItems = [
-  { label: "Home", href: "/", hash: "home" },
-  { label: "About", href: "/about" },
-  { label: "Products", href: "/products" },
-  { label: "Applications", href: "/", hash: "applications" },
-];
+import { navItems } from "../data/site";
 
 export default function Header() {
   const pathname = usePathname();
@@ -36,391 +16,156 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* Lock body scroll when menu is open */
   useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [menuOpen]);
 
-  /* Close mobile drawer on route change */
   const prevPathname = useRef(pathname);
   useEffect(() => {
     if (prevPathname.current !== pathname) {
       prevPathname.current = pathname;
-      // Menu must close when the route changes — this is a side-effect of navigation.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMenuOpen(false);
     }
   }, [pathname]);
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
-  function scrollToSection(e: React.MouseEvent, id: string) {
-    if (typeof window === "undefined") return;
-    const onHome = pathname === "/" || pathname === "";
-    if (onHome) {
-      e.preventDefault();
-      closeMenu();
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-        history.replaceState(null, "", "#" + id);
-      }
-    } else {
-      e.preventDefault();
-      window.location.assign("/#" + id);
-    }
-  }
+  const linkClass = (active: boolean) =>
+    `font-serif text-[0.9375rem] tracking-[0.015em] whitespace-nowrap transition-colors duration-150 ${
+      active ? "text-white" : "text-slate-400 hover:text-white"
+    }`;
 
   return (
     <>
-      <header
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 100,
-          padding: "1rem 1.5rem",
-          transition: "padding 300ms ease",
-        }}
-      >
-        <div style={{ maxWidth: "72rem", margin: "0 auto" }}>
+      <header className="sticky top-0 z-[100] px-6 py-4 transition-[padding] duration-300">
+        <div className="max-w-[72rem] mx-auto">
           <div
+            className={`
+              rounded-full px-8 py-3 flex items-center justify-between relative
+              border border-white/[0.06] backdrop-blur-[16px] saturate-180
+              transition-[background,box-shadow] duration-400
+            `}
             style={{
-              background: scrolled ? c.barBgSolid : c.barBg,
-              backdropFilter: "blur(16px) saturate(180%)",
-              WebkitBackdropFilter: "blur(16px) saturate(180%)",
-              borderRadius: 9999,
-              padding: "0.75rem 2rem",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              position: "relative",
-              border: "1px solid rgba(255,255,255,0.06)",
+              background: scrolled ? "rgba(15,23,42,0.92)" : "rgba(15,23,42,0.75)",
               boxShadow: scrolled
                 ? "0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.05)"
                 : "0 4px 24px rgba(0,0,0,0.12)",
-              transition: "background 400ms ease, box-shadow 400ms ease",
             }}
           >
             {/* Logo */}
-            <Link href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-              <span
-                style={{
-                  color: c.white,
-                  fontWeight: 700,
-                  fontSize: "1.125rem",
-                  fontFamily: "var(--font-playfair, Georgia, serif)",
-                }}
-              >
-                Vikas Lime
-              </span>
+            <Link href="/" className="shrink-0 no-underline">
+              <span className="text-white font-bold text-lg font-serif">Vikas Lime</span>
             </Link>
 
-            {/* Desktop Nav — centered absolutely */}
+            {/* Desktop nav — centered */}
             <nav
               aria-label="Main navigation"
-              className="hdr-desktop-nav"
-              style={{
-                position: "absolute",
-                left: "50%",
-                transform: "translateX(-50%)",
-              }}
+              className="hidden md:flex absolute left-1/2 -translate-x-1/2"
             >
-              <ul
-                style={{
-                  display: "flex",
-                  listStyle: "none",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "2rem",
-                  margin: 0,
-                  padding: 0,
-                }}
-              >
+              <ul className="flex items-center gap-8 list-none m-0 p-0">
                 {navItems.map((item) => {
-                  const isHash = !!item.hash;
-                  const isActive = !isHash && pathname === item.href;
-                  const linkStyle: React.CSSProperties = {
-                    fontFamily: "var(--font-playfair, Georgia, serif)",
-                    fontSize: "0.9375rem",
-                    letterSpacing: "0.015em",
-                    color: isActive ? c.linkHover : c.link,
-                    textDecoration: "none",
-                    transition: "color 150ms ease",
-                    whiteSpace: "nowrap",
-                  };
-
-                  if (isHash) {
-                    return (
-                      <li key={item.label}>
-                        <a
-                          href={`#${item.hash}`}
-                          onClick={(e) => scrollToSection(e, item.hash!)}
-                          style={linkStyle}
-                          className="hdr-link"
-                        >
-                          {item.label}
-                        </a>
-                      </li>
-                    );
-                  }
-
+                  const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
                   return (
-                    <li key={item.label}>
-                      <Link href={item.href} style={linkStyle} className="hdr-link">
+                    <li key={item.label} className="flex flex-col items-center gap-1.5">
+                      <Link href={item.href} className={linkClass(isActive)}>
                         {item.label}
                       </Link>
+                      <span
+                        className="block w-1 h-1 rounded-full bg-white transition-all duration-200"
+                        style={{ opacity: isActive ? 1 : 0, transform: isActive ? "scaleX(1)" : "scaleX(0)" }}
+                      />
                     </li>
                   );
                 })}
               </ul>
             </nav>
 
-            {/* Desktop CTA */}
+            {/* Desktop CTA pill */}
             <Link
               href="/contact"
-              className="hdr-desktop-cta"
-              style={{
-                textDecoration: "none",
-                background: c.pillBg,
-                color: c.pillText,
-                padding: "0.35rem 0.9rem",
-                borderRadius: 9999,
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.6rem",
-                boxShadow: "0 6px 18px rgba(2,6,23,0.12)",
-                flexShrink: 0,
-              }}
+              className="
+                hidden md:inline-flex items-center gap-2.5 shrink-0 no-underline
+                bg-white text-slate-900 rounded-full px-4 py-1.5
+                shadow-[0_6px_18px_rgba(2,6,23,0.12)]
+              "
             >
-              <span
-                style={{
-                  fontFamily: "var(--font-playfair, Georgia, serif)",
-                  fontWeight: 600,
-                  fontSize: "0.875rem",
-                }}
-              >
-                Contact Us
-              </span>
-              <span
-                style={{
-                  display: "inline-flex",
-                  width: 28,
-                  height: 28,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: 9999,
-                  background: c.arrowBg,
-                  color: c.arrowFg,
-                }}
-              >
+              <span className="font-serif font-semibold text-[0.875rem]">Contact Us</span>
+              <span className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-slate-900 text-white">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-                  <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  <path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               </span>
             </Link>
 
-            {/* Hamburger button — mobile only */}
+            {/* Hamburger — mobile only */}
             <button
-              className="hdr-hamburger"
+              className="md:hidden flex items-center justify-center p-1 bg-transparent border-none cursor-pointer shrink-0"
               onClick={() => setMenuOpen((v) => !v)}
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
-              style={{
-                display: "none", /* shown via media query */
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: "0.25rem",
-                flexShrink: 0,
-              }}
             >
-              <div style={{ width: 24, height: 18, position: "relative" }}>
-                <span
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    width: 24,
-                    height: 2,
-                    background: c.white,
-                    borderRadius: 2,
-                    transition: "transform 300ms ease, opacity 200ms ease",
-                    top: menuOpen ? 8 : 0,
-                    transform: menuOpen ? "rotate(45deg)" : "none",
-                  }}
-                />
-                <span
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    top: 8,
-                    width: 24,
-                    height: 2,
-                    background: c.white,
-                    borderRadius: 2,
-                    transition: "opacity 200ms ease",
-                    opacity: menuOpen ? 0 : 1,
-                  }}
-                />
-                <span
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    width: 24,
-                    height: 2,
-                    background: c.white,
-                    borderRadius: 2,
-                    transition: "transform 300ms ease, opacity 200ms ease",
-                    top: menuOpen ? 8 : 16,
-                    transform: menuOpen ? "rotate(-45deg)" : "none",
-                  }}
-                />
+              <div className="w-6 h-[18px] relative">
+                <span className="absolute left-0 w-6 h-0.5 bg-white rounded-sm transition-all duration-300"
+                  style={{ top: menuOpen ? 8 : 0, transform: menuOpen ? "rotate(45deg)" : "none" }} />
+                <span className="absolute left-0 top-2 w-6 h-0.5 bg-white rounded-sm transition-opacity duration-200"
+                  style={{ opacity: menuOpen ? 0 : 1 }} />
+                <span className="absolute left-0 w-6 h-0.5 bg-white rounded-sm transition-all duration-300"
+                  style={{ top: menuOpen ? 8 : 16, transform: menuOpen ? "rotate(-45deg)" : "none" }} />
               </div>
             </button>
           </div>
         </div>
       </header>
 
-      {/* ── Mobile drawer overlay ── */}
+      {/* Mobile overlay */}
       <div
-        className="hdr-overlay"
+        className="md:hidden fixed inset-0 z-[98] bg-black/50 backdrop-blur-sm transition-opacity duration-300"
+        style={{ opacity: menuOpen ? 1 : 0, pointerEvents: menuOpen ? "auto" : "none" }}
         onClick={closeMenu}
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 98,
-          background: "rgba(0,0,0,0.5)",
-          backdropFilter: "blur(4px)",
-          WebkitBackdropFilter: "blur(4px)",
-          opacity: menuOpen ? 1 : 0,
-          pointerEvents: menuOpen ? "auto" : "none",
-          transition: "opacity 300ms ease",
-        }}
       />
 
-      {/* ── Mobile drawer ── */}
+      {/* Mobile drawer */}
       <nav
-        className="hdr-mobile-drawer"
         aria-label="Mobile navigation"
+        className="md:hidden fixed top-0 right-0 z-[99] h-screen w-[min(80vw,320px)] bg-slate-900 border-l border-white/[0.06] flex flex-col gap-2 px-8 pt-20 pb-8 shadow-2xl transition-transform duration-350"
         style={{
-          position: "fixed",
-          top: 0,
-          right: 0,
-          zIndex: 99,
-          width: "min(80vw, 320px)",
-          height: "100vh",
-          background: c.drawerBg,
-          borderLeft: "1px solid rgba(255,255,255,0.06)",
-          padding: "5rem 2rem 2rem",
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.5rem",
           transform: menuOpen ? "translateX(0)" : "translateX(100%)",
-          transition: "transform 350ms cubic-bezier(0.16, 1, 0.3, 1)",
-          boxShadow: menuOpen ? "-8px 0 32px rgba(0,0,0,0.3)" : "none",
+          transition: "transform 350ms cubic-bezier(0.16,1,0.3,1)",
         }}
       >
         {navItems.map((item) => {
-          const isHash = !!item.hash;
-          const isActive = !isHash && pathname === item.href;
-
-          if (isHash) {
-            return (
-              <a
-                key={item.label}
-                href={`#${item.hash}`}
-                onClick={(e) => scrollToSection(e, item.hash!)}
-                style={{
-                  fontSize: "1.125rem",
-                  fontFamily: "var(--font-playfair, Georgia, serif)",
-                  color: c.link,
-                  textDecoration: "none",
-                  padding: "0.75rem 0",
-                  borderBottom: "1px solid rgba(255,255,255,0.06)",
-                  transition: "color 150ms ease",
-                }}
-                className="hdr-link"
-              >
-                {item.label}
-              </a>
-            );
-          }
-
+          const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
           return (
             <Link
               key={item.label}
               href={item.href}
               onClick={closeMenu}
-              style={{
-                fontSize: "1.125rem",
-                fontFamily: "var(--font-playfair, Georgia, serif)",
-                color: isActive ? c.linkHover : c.link,
-                textDecoration: "none",
-                padding: "0.75rem 0",
-                borderBottom: "1px solid rgba(255,255,255,0.06)",
-                transition: "color 150ms ease",
-              }}
-              className="hdr-link"
+              className={`font-serif text-lg py-3 border-b border-white/[0.06] transition-colors duration-150 flex items-center justify-between ${
+                isActive ? "text-white" : "text-slate-400 hover:text-white"
+              }`}
             >
               {item.label}
+              {isActive && (
+                <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0" />
+              )}
             </Link>
           );
         })}
 
-        {/* Mobile CTA */}
         <Link
           href="/contact"
           onClick={closeMenu}
-          style={{
-            marginTop: "1.5rem",
-            textDecoration: "none",
-            background: c.pillBg,
-            color: c.pillText,
-            padding: "0.75rem 1.25rem",
-            borderRadius: "0.75rem",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "0.6rem",
-            fontFamily: "var(--font-playfair, Georgia, serif)",
-            fontWeight: 600,
-            fontSize: "0.9375rem",
-          }}
+          className="mt-6 flex items-center justify-center gap-2 bg-white text-slate-900 rounded-xl px-5 py-3 font-serif font-semibold text-[0.9375rem] no-underline"
         >
           Contact Us
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-            <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            <path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            <path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
           </svg>
         </Link>
       </nav>
-
-      {/* Responsive styles */}
-      <style>{`
-        .hdr-link:hover { color: ${c.linkHover} !important; }
-
-        /* Desktop: show nav & CTA, hide hamburger */
-        @media (min-width: 769px) {
-          .hdr-desktop-nav { display: flex !important; }
-          .hdr-desktop-cta { display: inline-flex !important; }
-          .hdr-hamburger { display: none !important; }
-          .hdr-mobile-drawer { display: none !important; }
-          .hdr-overlay { display: none !important; }
-        }
-
-        /* Mobile: hide nav & CTA, show hamburger */
-        @media (max-width: 768px) {
-          .hdr-desktop-nav { display: none !important; }
-          .hdr-desktop-cta { display: none !important; }
-          .hdr-hamburger { display: flex !important; align-items: center; justify-content: center; }
-          .hdr-mobile-drawer { display: flex !important; }
-        }
-      `}</style>
     </>
   );
 }
